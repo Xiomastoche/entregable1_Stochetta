@@ -1,55 +1,56 @@
-// Simulador de plazo fijo a 30 dias, 60 dias o 90 dias
-
-let ingreso = false;
-
-function ingresar () {
-    const usuario = 'Xiomara';
-    const constraseña = '759153';
-    let usuarioIngresado = prompt ('Ingrese su usuario');
-    let contraseñaIngresada = prompt ('Ingrese su contraseña');
-    if ((usuarioIngresado === usuario) && (contraseñaIngresada === constraseña)) {
-        alert ('Bienvenido ' + usuario);
-        ingreso = true;
-        return true;
-    }else {
-        alert ('Usuario o Contraseña incorrectos. Vuelva a cargar la pagina.');
-    }
+// Definimos las tasas de interés
+const tasas = [
+    { dias: 30, tasa: 0.08 },
+    { dias: 60, tasa: 0.16 },
+    { dias: 90, tasa: 0.25 },
+  ];
+  
+// Obtenemos los elementos del DOM
+const capitalInput = document.getElementById("capital");
+const plazoInput = document.getElementById("plazo");
+const resultadoDiv = document.getElementById("resultado");
+  
+// Agregamos los eventos
+capitalInput.addEventListener("input", actualizarResultado);
+plazoInput.addEventListener("input", actualizarResultado);
+  
+// Definimos la función para actualizar el resultado
+function actualizarResultado() {
+    // Obtenemos los datos del usuario
+    const capital = parseFloat(capitalInput.value);
+    const plazo = parseInt(plazoInput.value);
+  
+    // Buscamos la tasa correspondiente al plazo ingresado
+    const tasa = tasas.find(function (t) {
+        return t.dias === plazo;
+    }).tasa;
+  
+    // Calculamos los intereses
+    const intereses = capital * (tasa / 100) * (plazo / 365);
+    const total = capital + intereses
+  
+    // Mostramos los resultados
+    resultadoDiv.innerHTML = `
+    Capital: $${capital.toFixed(2)}<br />
+    Tasa: ${(tasa * 100).toFixed(2)}%<br />
+    Plazo: ${plazo} días<br />
+    Intereses: $${intereses.toFixed(2)}<br />
+    Total: $${total.toFixed(2)}
+  `;
+  
+    // Guardamos los datos en localStorage
+    localStorage.setItem("capital", capital);
+    localStorage.setItem("plazo", plazo);
+}
+  
+// Cargamos los datos guardados en localStorage
+if (localStorage.getItem("capital")) {
+    capitalInput.value = localStorage.getItem("capital");
+}
+  
+if (localStorage.getItem("plazo")) {
+    plazoInput.value = localStorage.getItem("plazo");
 }
 
-ingresar ();
-
-const plazoFijo1 = 0.08;
-const plazoFijo2 = 0.16;
-const plazoFijo3 = 0.25;
-
-function inicializar () {
-   if (ingreso){
-    let deposito = Number (prompt ('Ingresá cuanto queres invertir:'));
-    let dias = prompt ('A cuántos días? (responda el numero correspondiente): \n 1- 30 días \n 2- 60 días \n 3- 90 días');
-    switch (dias){
-        case '1':
-            let total1 = (deposito * plazoFijo1 ) + deposito;
-            alert ('Al final del plazo fijo, recibís $' + total1);
-            break;
-        case '2':
-            let total2 = (deposito * plazoFijo2 ) + deposito;
-            alert ('Al final del plazo fijo, recibís $'  + total2);
-            break;
-        case '3':
-            let total3 = (deposito * plazoFijo2 ) + deposito;
-            alert ('Al final del plazo fijo, recibís $' + total3);
-        break;
-        default:
-            alert ('ERROR. Intoduzca un número válido');
-        break;
-    }    
-   } else { 
-        let loop = true;
-   }
-}
-
-inicializar ();
-
-
-
-    
+// Actualizamos el resultado al cargar la página
+actualizarResultado();
